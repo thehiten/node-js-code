@@ -189,23 +189,54 @@ graph TD
 #### 2. Update Course
 ```mermaid
 graph TD
-    A[Get course ID from URL] --> B[Update course data]
-    B --> C[Send response]
+    A[Get course ID from URL params] --> B[Extract new course data from body]
+    B --> C[Find course by ID and update]
+    C --> D{Course found?}
+    D -->|Yes| E[Return success message]
+    D -->|No| F[Return course not found error]
+    E --> G[Send response]
+    F --> G
 ```
+
+**Step by step:**
+1. Extract: `const { id } = req.params` (from URL)
+2. Extract: `{ title, description, price, image }` from req.body
+3. Update: `Course.findByIdAndUpdate(id, { title, description, price, image }, { new: true })`
+4. Check: If course exists
+5. Response: Success or "course not found"
 
 #### 3. Delete Course
 ```mermaid
 graph TD
-    A[Get course ID from URL] --> B[Delete from MongoDB]
-    B --> C[Send response]
+    A[Get course ID from URL params] --> B[Find and delete course by ID]
+    B --> C{Course found?}
+    C -->|Yes| D[Course deleted successfully]
+    C -->|No| E[Return course not found error]
+    D --> F[Send success response]
+    E --> F
 ```
+
+**Step by step:**
+1. Extract: `const { id } = req.params` (from URL)
+2. Delete: `Course.findByIdAndDelete(id)`
+3. Check: If course exists
+4. Response: Success or "course not found"
 
 #### 4. Get All Courses
 ```mermaid
 graph TD
-    A[Request] --> B[Find all courses]
-    B --> C[Return courses list]
+    A[GET request received] --> B[Find all courses in database]
+    B --> C{Courses found?}
+    C -->|Yes| D[Return courses array]
+    C -->|No| E[Return courses not found]
+    D --> F[Send success response with courses]
+    E --> F
 ```
+
+**Step by step:**
+1. Find: `Course.find()` (get all courses)
+2. Check: If courses exist
+3. Response: Success with courses array or "courses not found"
 
 ## 🔒 Authentication System
 
